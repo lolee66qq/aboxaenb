@@ -3,36 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AWS Premium Player 🎬</title>
+    <title>مشغل السيرفر الخاص 🎬</title>
     <style>
         body { margin: 0; background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        video { width: 100%; max-width: 900px; border-radius: 8px; box-shadow: 0 0 15px rgba(0, 112, 240, 0.5); outline: none; }
-        .error { color: red; font-family: sans-serif; font-size: 20px; display: none; }
+        video { width: 100%; max-width: 900px; border-radius: 8px; box-shadow: 0 0 20px rgba(0, 112, 240, 0.3); outline: none; }
+        .error { color: #ff4d4d; font-family: Tahoma, sans-serif; font-size: 18px; display: none; text-align: center; }
     </style>
 </head>
 <body>
-    <video id="player" controls autoplay preload="auto">متصفحك لا يدعم التشغيل.</video>
-    <div id="error-msg" class="error">❌ حدث خطأ في تحميل السيرفر المشفر!</div>
+    <video id="player" controls autoplay preload="metadata" playsinline webkit-playsinline>
+        متصفحك لا يدعم هذا المشغل.
+    </video>
+    <div id="error-msg" class="error">❌ عذراً، لا يمكن الوصول لملف الفيديو المطلوب.</div>
 
     <script>
-        // سحب المتغير "v" اللي يحتوي على الطلاسم (الرابط المشفر)
         const params = new URLSearchParams(window.location.search);
-        const encodedUrl = params.get('v');
+        let encodedValue = params.get('v');
         
-        if (encodedUrl) {
+        const player = document.getElementById('player');
+        const errorMsg = document.getElementById('error-msg');
+
+        if (encodedValue) {
             try {
-                // فك التشفير (atob) يرجع الطلاسم إلى رابط Pixeldrain الحقيقي سراً
-                const decodedUrl = atob(encodedUrl);
-                document.getElementById('player').src = decodedUrl;
+                // 1. خدعة التمويه: إذا الرابط ينتهي بـ .mp4 نقوم بحذفها أولاً
+                if (encodedValue.endsWith('.mp4')) {
+                    encodedValue = encodedValue.slice(0, -4);
+                }
+
+                // 2. فك التشفير: تحويل الطلاسم إلى الرابط الأصلي المشفر
+                const decodedSafeUrl = atob(encodedValue);
+                
+                // 3. فك تشفير الـ URL للحصول على الرابط الصافي النهائي
+                const finalStreamUrl = decodeURIComponent(decodedSafeUrl);
+                
+                // 4. تشغيل الفيديو
+                player.src = finalStreamUrl;
+                
+                // التعامل مع أخطاء التشغيل
+                player.onerror = function() {
+                    player.style.display = 'none';
+                    errorMsg.style.display = 'block';
+                    errorMsg.textContent = "❌ حدث خطأ أثناء محاولة بث الفيديو من المصدر.";
+                };
+
             } catch (e) {
-                // إذا حاول شخص يلعب بالرابط ويخربه
-                document.getElementById('player').style.display = 'none';
-                document.getElementById('error-msg').style.display = 'block';
+                console.error("خطأ في فك التشفير:", e);
+                player.style.display = 'none';
+                errorMsg.style.display = 'block';
+                errorMsg.textContent = "❌ رابط الفيديو تالف أو غير صالح.";
             }
         } else {
-            document.getElementById('player').style.display = 'none';
-            document.getElementById('error-msg').style.display = 'block';
+            player.style.display = 'none';
+            errorMsg.style.display = 'block';
         }
     </script>
+</body>
+</html>
 </body>
 </html>
