@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="referrer" content="no-referrer">
+    
     <title>مشغل السيرفر الخاص 🎬</title>
     <style>
         body { margin: 0; background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; }
@@ -25,15 +28,34 @@
 
         if (encodedValue) {
             try {
-                // 1. خدعة التمويه: إذا الرابط ينتهي بـ .mp4 نقوم بحذفها أولاً
                 if (encodedValue.endsWith('.mp4')) {
                     encodedValue = encodedValue.slice(0, -4);
                 }
 
-                // 2. فك التشفير: تحويل الطلاسم إلى الرابط الأصلي المشفر
                 const decodedSafeUrl = atob(encodedValue);
+                const finalStreamUrl = decodeURIComponent(decodedSafeUrl);
                 
-                // 3. فك تشفير الـ URL للحصول على الرابط الصافي النهائي
+                player.src = finalStreamUrl;
+                
+                player.onerror = function() {
+                    player.style.display = 'none';
+                    errorMsg.style.display = 'block';
+                    errorMsg.textContent = "❌ حدث خطأ أثناء محاولة بث الفيديو من المصدر.";
+                };
+
+            } catch (e) {
+                console.error("خطأ:", e);
+                player.style.display = 'none';
+                errorMsg.style.display = 'block';
+                errorMsg.textContent = "❌ رابط الفيديو تالف أو غير صالح.";
+            }
+        } else {
+            player.style.display = 'none';
+            errorMsg.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
                 const finalStreamUrl = decodeURIComponent(decodedSafeUrl);
                 
                 // 4. تشغيل الفيديو
