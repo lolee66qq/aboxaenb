@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مشغل أوس المباشر 🎬</title>
+    <title>AWS Premium Player 🎬</title>
     <style>
         body { margin: 0; background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; }
         video { width: 100%; max-width: 900px; border-radius: 8px; box-shadow: 0 0 15px rgba(0, 112, 240, 0.5); outline: none; }
@@ -12,13 +12,23 @@
 </head>
 <body>
     <video id="player" controls autoplay preload="auto">متصفحك لا يدعم التشغيل.</video>
-    <div id="error-msg" class="error">❌ الرابط غير موجود أو تالف!</div>
+    <div id="error-msg" class="error">❌ حدث خطأ في تحميل السيرفر المشفر!</div>
 
     <script>
+        // سحب المتغير "v" اللي يحتوي على الطلاسم (الرابط المشفر)
         const params = new URLSearchParams(window.location.search);
-        const videoUrl = params.get('video');
-        if (videoUrl) {
-            document.getElementById('player').src = videoUrl;
+        const encodedUrl = params.get('v');
+        
+        if (encodedUrl) {
+            try {
+                // فك التشفير (atob) يرجع الطلاسم إلى رابط Pixeldrain الحقيقي سراً
+                const decodedUrl = atob(encodedUrl);
+                document.getElementById('player').src = decodedUrl;
+            } catch (e) {
+                // إذا حاول شخص يلعب بالرابط ويخربه
+                document.getElementById('player').style.display = 'none';
+                document.getElementById('error-msg').style.display = 'block';
+            }
         } else {
             document.getElementById('player').style.display = 'none';
             document.getElementById('error-msg').style.display = 'block';
@@ -26,4 +36,3 @@
     </script>
 </body>
 </html>
-
