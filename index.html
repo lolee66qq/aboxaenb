@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مشغل أوس المباشر 🎬</title>
+    <style>
+        body { margin: 0; background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        video { width: 100%; max-width: 900px; border-radius: 8px; box-shadow: 0 0 15px rgba(0, 112, 240, 0.5); outline: none; }
+        .error { color: red; font-family: sans-serif; font-size: 20px; display: none; }
+    </style>
+</head>
+<body>
+    <video id="player" controls autoplay preload="auto">متصفحك لا يدعم التشغيل.</video>
+    <div id="error-msg" class="error">❌ الرابط غير موجود أو تالف!</div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const videoUrl = params.get('video');
+        if (videoUrl) {
+            document.getElementById('player').src = videoUrl;
+        } else {
+            document.getElementById('player').style.display = 'none';
+            document.getElementById('error-msg').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
+
