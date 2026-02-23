@@ -56,6 +56,28 @@
     </script>
 </body>
 </html>
+                
+                player.src = finalStreamUrl;
+                
+                player.onerror = function() {
+                    player.style.display = 'none';
+                    errorMsg.style.display = 'block';
+                    errorMsg.textContent = "❌ حدث خطأ أثناء محاولة بث الفيديو من المصدر.";
+                };
+
+            } catch (e) {
+                console.error("خطأ:", e);
+                player.style.display = 'none';
+                errorMsg.style.display = 'block';
+                errorMsg.textContent = "❌ رابط الفيديو تالف أو غير صالح.";
+            }
+        } else {
+            player.style.display = 'none';
+            errorMsg.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
                 const finalStreamUrl = decodeURIComponent(decodedSafeUrl);
                 
                 // 4. تشغيل الفيديو
