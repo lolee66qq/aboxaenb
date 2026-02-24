@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <meta name="referrer" content="no-referrer">
-    
-    <title>مشغل السيرفر الخاص 🎬</title>
+    <title>المشغل المباشر (بدون تشفير) 🎬</title>
     <style>
         body { margin: 0; background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; }
         video { width: 100%; max-width: 900px; border-radius: 8px; box-shadow: 0 0 20px rgba(0, 112, 240, 0.3); outline: none; }
@@ -17,23 +15,34 @@
     <video id="player" controls autoplay preload="metadata" playsinline webkit-playsinline>
         متصفحك لا يدعم هذا المشغل.
     </video>
-    <div id="error-msg" class="error">❌ عذراً، لا يمكن الوصول لملف الفيديو المطلوب.</div>
+    <div id="error-msg" class="error">❌ حدث خطأ أثناء محاولة بث الفيديو من المصدر.</div>
 
     <script>
+        // سحب الرابط من كلمة video= بدل v=
         const params = new URLSearchParams(window.location.search);
-        let encodedValue = params.get('v');
+        const rawVideoUrl = params.get('video'); 
         
         const player = document.getElementById('player');
         const errorMsg = document.getElementById('error-msg');
 
-        if (encodedValue) {
-            try {
-                if (encodedValue.endsWith('.mp4')) {
-                    encodedValue = encodedValue.slice(0, -4);
-                }
-
-                const decodedSafeUrl = atob(encodedValue);
-                const finalStreamUrl = decodeURIComponent(decodedSafeUrl);
+        if (rawVideoUrl) {
+            // تشغيل الرابط الخام مباشرة بدون أي فك تشفير
+            player.src = rawVideoUrl;
+            
+            // إذا السيرفر رفض البث
+            player.onerror = function() {
+                player.style.display = 'none';
+                errorMsg.style.display = 'block';
+                errorMsg.textContent = "❌ سيرفر ميديا فاير يرفض البث بداخل المتصفح.";
+            };
+        } else {
+            player.style.display = 'none';
+            errorMsg.style.display = 'block';
+            errorMsg.textContent = "❌ لم يتم إرفاق رابط الفيديو!";
+        }
+    </script>
+</body>
+</html>
                 
                 player.src = finalStreamUrl;
                 
